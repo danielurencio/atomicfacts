@@ -95,9 +95,18 @@ def extractIDsFromCalendar(bimesterCalendar):
         return splits
 
 
+    def properNames(x):
+        arr = x.split('-')
+        pName = '-'.join(arr[:len(arr)-1])
+        return pName
+
+
     names = list( map(lastSplit('/'),hrefs) )
     ids = list( map(lastSplit('-'),names) )
+    properN = list( map(properNames,names) )
 
-    return names
+    datasets = [ { 'serie':properN[i], 'id':ids[i] } for i,d in enumerate(properN) ]
+
+    return datasets
 
 
