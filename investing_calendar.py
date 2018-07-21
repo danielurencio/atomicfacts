@@ -4,6 +4,8 @@ import calendar
 import numpy as np
 from datetime import datetime
 from bs4 import BeautifulSoup as bs
+from time import sleep
+
 
 
 
@@ -35,6 +37,7 @@ def Bimesters(startYear=1970):
             counter += 1
 
     return arr
+
 
 
 
@@ -82,6 +85,7 @@ def getBimesterCalendar(bimester):
 
 
 
+
 def extractIDsFromCalendar(bimesterCalendar):
     rows = bs(bimesterCalendar,'html5lib').select('tr[event_attr_id]')
     hrefs = list( map(lambda x:x.select('a')[0]['href'],rows) )
@@ -105,6 +109,21 @@ def extractIDsFromCalendar(bimesterCalendar):
     datasets = [ { 'serie':properN[i], 'id':ids[i] } for i,d in enumerate(properN) ]
 
     return datasets
+
+
+
+
+def idsThroughout(bimesters):
+    arr = []
+    for b in bimesters:
+        print('Getting: ',b)
+        bimesterCalendar = getBimesterCalendar(b)
+        ids = extractIDsFromCalendar(bimesterCalendar)
+        arr += ids
+        print('Sleep 2 secs...\n')
+        sleep(2)
+
+    return arr
 
 
 
