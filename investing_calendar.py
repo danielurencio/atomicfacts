@@ -85,9 +85,7 @@ def getBimesterCalendar(bimester):
 def extractIDsFromCalendar(bimesterCalendar):
     rows = bs(bimesterCalendar,'html5lib').select('tr[event_attr_id]')
     hrefs = list( map(lambda x:x.select('a')[0]['href'],rows) )
-
     
-
     def lastSplit(sep):
         def splits(x):
             last = len(x.split(sep)) - 1
@@ -99,7 +97,6 @@ def extractIDsFromCalendar(bimesterCalendar):
         arr = x.split('-')
         pName = '-'.join(arr[:len(arr)-1])
         return pName
-
 
     names = list( map(lastSplit('/'),hrefs) )
     ids = list( map(lastSplit('-'),names) )
