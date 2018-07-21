@@ -110,3 +110,9 @@ def extractIDsFromCalendar(bimesterCalendar):
     return datasets
 
 
+
+if __name__ == '__main__':
+    bimesters = Bimesters()
+    bimesterCalendar = getBimesterCalendar(bimesters[0])
+    ids = extractIDsFromCalendar(bimesterCalendar)
+    print(ids)
