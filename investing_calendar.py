@@ -123,6 +123,7 @@ def idsThroughout(bimesters):
         print('Sleep 2 secs...\n')
         sleep(2)
 
+    #arr = list({ d['id']: d for d in data}.values())
     return arr
 
 
