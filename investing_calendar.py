@@ -58,7 +58,7 @@ def getBimesterCalendar(bimester):
     }
 
     data = [
-        ('country[]','72'),
+#        ('country[]','72'),
         ('country[]','5'),
         ('category[]','_employment'),
         ('category[]','_economicActivity'),
@@ -123,13 +123,13 @@ def idsThroughout(bimesters):
         print('Sleep 2 secs...\n')
         sleep(2)
 
-    #arr = list({ d['id']: d for d in data}.values())
+    arr = list( { d['id']: d for d in arr }.values() )
     return arr
 
 
 
 if __name__ == '__main__':
     bimesters = Bimesters()
-    bimesterCalendar = getBimesterCalendar(bimesters[0])
-    ids = extractIDsFromCalendar(bimesterCalendar)
-    print(ids)
+    arr = idsThroughout(bimesters)
+    with open('ids.json','w') as output:
+        json.dump(arr,output)
