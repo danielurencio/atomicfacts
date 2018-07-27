@@ -5,6 +5,17 @@ import numpy as np
 from datetime import datetime
 from bs4 import BeautifulSoup as bs
 from time import sleep
+from pymongo import MongoClient
+
+
+
+try:
+    client = MongoClient('mongodb://localhost:27017')
+    db = client.investing.usd_id
+    cursor = db.find( {},{'_id':0} )
+    arr = [ i for i in cursor ]
+except:
+    pass
 
 
 
@@ -68,6 +79,8 @@ def getBimesterCalendar(bimester):
         ('category[]','_confidenceIndex'),
         ('category[]','_balance'),
         ('category[]','_Bonds'),
+        ('importance[]','1'),
+        ('importance[]','2'),
         ('importance[]','3'),
         ('dateFrom',bimester[0]),
         ('dateTo',bimester[1]),
@@ -128,8 +141,35 @@ def idsThroughout(bimesters):
 
 
 
-if __name__ == '__main__':
+def getAllIds():
     bimesters = Bimesters()
     arr = idsThroughout(bimesters)
     with open('ids.json','w') as output:
         json.dump(arr,output)
+
+
+
+def getSerie(id):
+    url = 'https://sbcharts.investing.com/events_charts/us/'+ id +'.json'
+
+    headers = {
+     'Origin':'https://www.investing.com',
+     'Accept-Encoding':'gzip, deflate, br',
+     'Accept-Language':'en-US,en;q=0.9',
+     'User-Agent':'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36',
+     'Content-Type':'application/x-www-form-urlencoded',
+     'Accept':'*/*',
+     'Referer':'https://www.investing.com/economic-calendar/',
+     'X-Requested-With':'XMLHttpRequest',
+     'Connection':'keep-alive'
+    }
+
+    res = requests.get(url,headers=headers)
+    res = json.loads(res.text)#['data']
+    return res
+
+
+
+
+#if __name__ == '__main__':
+    #getAllIds()
