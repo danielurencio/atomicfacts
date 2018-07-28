@@ -171,5 +171,30 @@ def getSerie(id):
 
 
 
+def downloadSeries(arr,country):
+    print(country)
+
+    for i in arr:
+        data = getSerie(i['id'])
+
+        print(i['serie'])
+
+        db = client[country]
+
+        if(len(data['attr']) != 0):
+            db[i['serie'] + '_attr'].insert_many(data['attr'])
+            print('data' + '\n')
+
+        if(len(data['data']) != 0):
+            data_ = map(lambda x:{ 'timestamp':x[0],'val':x[1],'is':x[2] }, data['data'])
+            data_ = list(data_)
+            db[i['serie'] + '_data'].insert_many(data_)
+            print('attr' + '\n')
+
+
+        sleep(2)
+        
+
+
 #if __name__ == '__main__':
     #getAllIds()
