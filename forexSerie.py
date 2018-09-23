@@ -1,53 +1,56 @@
 import json
 import requests
-import numpy
+from time import sleep
 from datetime import datetime
+from pymongo import MongoClient
 
 
 pair_ids = \
 [
-    ["EUR/USD","1"],
-    ["USD/JPY","3"],
-    ["GBP/USD","2"],
-    ["USD/CHF","4"],
-    ["USD/CAD","7"],
-    ["EUR/JPY","9"],
-    ["AUD/USD","5"],
-    ["NZD/USD","8"],
-    ["EUR/GBP","6"],
-    ["EUR/CHF","10"],
-    ["AUD/JPY","49"],
-    ["GBP/JPY","11"],
-    ["CHF/JPY","13"],
-    ["EUR/CAD","16"],
-    ["AUD/CAD","47"],
-    ["CAD/JPY","51"],
-    ["NZD/JPY","58"],
-    ["AUD/NZD","50"],
-    ["GBP/AUD","53"],
-    ["EUR/AUD","15"],
-    ["GBP/CHF","12"],
-    ["EUR/NZD","52"],
-    ["AUD/CHF","48"],
-    ["GBP/NZD","55"],
-    ["USD/INR","160"],
-    ["USD/CNY","2111"],
-    ["USD/SGD","42"],
-    ["USD/HKD","155"],
-    ["USD/DKK","43"],
-    ["GBP/CAD","54"],
-    ["USD/SEK","41"],
-    ["USD/RUB","2186"],
-    ["USD/TRY","18"],
-    ["USD/MXN","39"],
-    ["USD/ZAR","17"],
-    ["CAD/CHF","14"],
-    ["NZD/CAD","56"],
-    ["NZD/CHF","57"],
-    ["BTC/USD","945629"],
-    ["BTC/EUR","1010801"],
-    ["ETH/USD","997650"]
+    ["EUR_USD","1"],
+    ["USD_JPY","3"],
+    ["GBP_USD","2"],
+    ["USD_CHF","4"],
+    ["USD_CAD","7"],
+    ["EUR_JPY","9"],
+    ["AUD_USD","5"],
+    ["NZD_USD","8"],
+    ["EUR_GBP","6"],
+    ["EUR_CHF","10"],
+    ["AUD_JPY","49"],
+    ["GBP_JPY","11"],
+    ["CHF_JPY","13"],
+    ["EUR_CAD","16"],
+    ["AUD_CAD","47"],
+    ["CAD_JPY","51"],
+    ["NZD_JPY","58"],
+    ["AUD_NZD","50"],
+    ["GBP_AUD","53"],
+    ["EUR_AUD","15"],
+    ["GBP_CHF","12"],
+    ["EUR_NZD","52"],
+    ["AUD_CHF","48"],
+    ["GBP_NZD","55"],
+    ["USD_INR","160"],
+    ["USD_CNY","2111"],
+    ["USD_SGD","42"],
+    ["USD_HKD","155"],
+    ["USD_DKK","43"],
+    ["GBP_CAD","54"],
+    ["USD_SEK","41"],
+    ["USD_RUB","2186"],
+    ["USD_TRY","18"],
+    ["USD_MXN","39"],
+    ["USD_ZAR","17"],
+    ["CAD_CHF","14"],
+    ["NZD_CAD","56"],
+    ["NZD_CHF","57"],
+    ["BTC_USD","945629"],
+    ["BTC_EUR","1010801"],
+    ["ETH_USD","997650"]
 ]
+
+
 
 
 def paramsParse(symbol,to):
@@ -63,11 +66,12 @@ def paramsParse(symbol,to):
     return params
 
 
-def forexPros(symbol,to):
+
+
+def get_forexPairData(symbol,to):
     params = paramsParse(symbol,to)
     url = 'https://tvc4.forexpros.com/7cb640281e0d1f3943e7a8cd04634abc/1537593163/1/1/8/history?' +\
             params
-    #symbol='+symbol+'&resolution=D&from=1506489180&to=1537593241'
 
     headers = {
         'Accept':'*/*',
@@ -83,3 +87,17 @@ def forexPros(symbol,to):
     res = [ {'time':res[0][i], 'open':res[1][i], 'high':res[2][i], 'close':res[3][i] } for i,d in enumerate(res[0]) ]
 
     return res
+
+
+
+
+def getAllPairs():
+    now = datetime.now().strftime('%s')
+    db = MongoClient('mongodb://localhost:27017')['forex']
+
+    for i in pair_ids:
+        data = get_forexPairData(i[1],now)
+        db[i[0]].insert(data)
+        print(i[0])
+        sleep(2)
+
