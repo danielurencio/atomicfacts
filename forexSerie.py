@@ -1,7 +1,7 @@
 import json
 import requests
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from pymongo import MongoClient
 
 
@@ -53,12 +53,12 @@ pair_ids = \
 
 
 
-def paramsParse(symbol,to):
+def paramsParse(symbol,start,finish):
     params = {
         'symbol':symbol,
         'resolution':'D',
-        'from':'0',
-        'to':to
+        'from':start,
+        'to':finish
     }
 
     params = map(lambda x:'='.join(x),params.items())
@@ -68,8 +68,8 @@ def paramsParse(symbol,to):
 
 
 
-def get_forexPairData(symbol,to):
-    params = paramsParse(symbol,to)
+def get_forexPairData(symbol,start,finish):
+    params = paramsParse(symbol,start,finish)
     url = 'https://tvc4.forexpros.com/7cb640281e0d1f3943e7a8cd04634abc/1537593163/1/1/8/history?' +\
             params
 
@@ -92,12 +92,21 @@ def get_forexPairData(symbol,to):
 
 
 def getAllPairs():
-    now = datetime.now().strftime('%s')
+    finish = ( datetime.now() - timedelta(days=2) ).strftime('%s')
     db = MongoClient('mongodb://localhost:27017')['forex']
 
     for i in pair_ids:
-        data = get_forexPairData(i[1],now)
-        db[i[0]].insert(data)
+        start = datetime.fromtimestamp(0)
+        arr = []
+
+        while start < datetime.fromtimestamp(int(finish)):
+            data = get_forexPairData(i[1],start.strftime('%s'),finish)
+            arr += data
+            start = datetime.fromtimestamp(data[-1]['time']) + timedelta(days=1)
+ 
+            sleep(2)
+
+        db[i[0]].insert(arr)
         print(i[0])
         sleep(2)
 
