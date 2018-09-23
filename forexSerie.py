@@ -84,7 +84,7 @@ def get_forexPairData(symbol,start,finish):
     res = requests.get(url,headers=headers).text
     res = json.loads(res)
     res = [res['t'],res['o'],res['h'],res['l'],res['c']]
-    res = [ {'time':res[0][i], 'open':res[1][i], 'high':res[2][i], 'close':res[3][i] } for i,d in enumerate(res[0]) ]
+    res = [ {'time':res[0][i], 'open':res[1][i], 'high':res[2][i], 'low':res[3][i], 'close':res[4][i] } for i,d in enumerate(res[0]) ]
 
     return res
 
