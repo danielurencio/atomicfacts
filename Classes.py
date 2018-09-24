@@ -10,6 +10,7 @@ from pymongo import MongoClient
 class Instrument(object):
     def __init__(self,instrument):
         self.db = db = MongoClient('mongodb://localhost:27017').forex
+        self.name = instrument
         self.data = self.get_data(instrument)
 
     # Turns data into a Pandas DataFrame:
