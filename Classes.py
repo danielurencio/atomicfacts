@@ -72,6 +72,7 @@ class Instrument(object):
         data = self.ohlc(st)
         data = self.n_lags(data,lag)
         features = filter(lambda x:re.match('^F_',x),dir(self))
+
         for f in features:
             method = map(getattr(self,f),data)
             method = np.array(list(method))
