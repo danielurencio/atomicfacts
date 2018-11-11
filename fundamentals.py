@@ -51,7 +51,7 @@ def Bimesters(startYear=1970):
 
 
 
-
+## A function to scrape all available countries and their code should be added:
 def getBimesterCalendar(bimester):
 
     url = 'https://www.investing.com/economic-calendar/Service/getCalendarFilteredData'
