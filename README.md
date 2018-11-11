@@ -11,6 +11,7 @@ Within `getAllIds` a function named `getBimesterCalendar` is executed. At the ti
 A function that extracts all possible country IDs is yet to be added.
 
 To download all available fundamentals, do:
-
+```
     >>> arr = json.loads(open('ids.json').read())
     >>> downloadSeries(arr,'US')
+```
