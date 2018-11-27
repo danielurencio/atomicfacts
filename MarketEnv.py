@@ -58,6 +58,10 @@ class MarketEnv(Instrument):
         return gg
 
 
+    def reset(self):
+        self.step = 0
+        return self.step_(1)[0]
+
     def step_(self,action):
         row = self.data_.iloc[self.step + 0 + 21]
         currentPrice = row['close']

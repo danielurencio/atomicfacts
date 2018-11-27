@@ -9,27 +9,31 @@ from pymongo import MongoClient
 
 class Instrument(object):
     def __init__(self,instrument):
+        self.setData(instrument)
+
+    def setData(self,instrument):
         self.db = db = MongoClient('mongodb://localhost:27017').forex
         self.name = instrument
         self.data = self.get_data(instrument)
+        #self.createDF()
 
     # Turns data into a Pandas DataFrame:
     def createDF(self):
         self.df = pd.DataFrame(self.data)
-        self.df['time'] = self.df['time'].map(lambda x:datetime.fromtimestamp(x))        
-    
+        self.df['time'] = self.df['time'].map(lambda x:datetime.fromtimestamp(x))
+
     # Queries an instrument's daily prices from the database:
     def get_data(self,instrument):
         cursor = self.db[instrument].find({},{ '_id':0 })
         data = [ d for d in cursor ]
         return data
-    
+
     # Gets a single value from the OHLC set:
     def ohlc(self,st):
         data = map(lambda x:x[st],self.data)
         data = list(data)
         return data
-    
+
     # Arranges data as a n-lagged serie:
     def n_lags(self,arr,lag):
         lags = [ arr[i:i+lag] for i,d in enumerate(arr) ]
@@ -56,7 +60,7 @@ class Instrument(object):
         upper = m + std
         lower = m - std
         return [upper,lower]
-    
+
     # Makes sure that objects returned by methods have the same size as data:
     def fillNan(self,arr):
         n = len(self.data) - len(arr)
@@ -65,7 +69,7 @@ class Instrument(object):
         nans = nans.reshape((n,arr.shape[1])) if len(arr.shape) > 1 else nans
         filledObj = np.concatenate([nans,arr])
         return filledObj
-    
+
     # Generate DataFrame with all computable features:
     def addFeatures(self,st,lag):
         self.createDF()
@@ -79,16 +83,15 @@ class Instrument(object):
             method = self.fillNan(method)
             name = '_'.join([f,str(lag),st])
             name = re.sub('F_','',name)
-            
+
             if(len(method.shape) > 1):
                 names = map(lambda x:'_'.join([name,str(x)]),range(method.shape[1]))
                 names = list(names)
-                
+
                 for i,d in enumerate(names):
                     self.df[d] = method[:,i]
             else:
                 self.df[name] = method
-                
+
         self.df.dropna(inplace=True)
         self.df.set_index('time',inplace=True)
-
