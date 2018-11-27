@@ -67,6 +67,8 @@ class agent():
         self.update_batch = optimizer.apply_gradients(zip(self.gradient_holders,tvars))
 
 
+
+
 tf.reset_default_graph() #Clear the Tensorflow graph.
 
 myAgent = agent(lr=1e-2,s_size=22,a_size=3,h_size=32) #Load the agent.

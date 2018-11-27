@@ -1,6 +1,6 @@
 # forexSerie.py
 
-Running `getAllPairs()` will download and store, in a MongoDB instance, hourly data for many pairs.
+Running `getAllPairs()` will download and store, in a MongoDB instance, daily data for many pairs.
 
 # fundamentals.py
 
