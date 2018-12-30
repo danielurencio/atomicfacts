@@ -16,7 +16,7 @@ class MarketEnv(object):
             
         self.df = df.copy()
         self.cols = self.df.columns.tolist()[:-1]
-        self.lag = 8
+        self.lag = lag
         self.standardize = standardize
         self.hold = hold
         self.laggedFeatures = self.generate_LaggedDataset()

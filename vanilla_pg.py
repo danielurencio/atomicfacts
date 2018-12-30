@@ -6,6 +6,10 @@ import gym
 import matplotlib.pyplot as plt
 from MarketEnv import MarketEnv
 from Classes import Instrument
+from pymongo import MongoClient
+
+mongo_store = True
+db = MongoClient('mongodb://localhost:27017').pg.test
 
 df = pd.read_csv('fx_daily_EUR_USD.csv',parse_dates=['timestamp'],index_col='timestamp')
 df.sort_index(inplace=True)
@@ -148,7 +152,11 @@ with tf.Session() as sess:
 
 
             #Update our running tally of scores.
-        if i % 100 == 0:
-            print(np.mean(total_reward[-100:]))
+        if i % 100 == 0 and i > 0:
+            mean_ = np.mean(total_reward[-100:])
+            if mongo_store:
+                db.insert({ 'iteration':i, 'mean_reward':mean_ })
+
+            print(mean_)
 
         i += 1
