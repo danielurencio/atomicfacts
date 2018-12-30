@@ -99,8 +99,9 @@ with tf.Session() as sess:
     gradBuffer = sess.run(tf.trainable_variables())
     for ix,grad in enumerate(gradBuffer):
         gradBuffer[ix] = grad * 0
-
-    while i < total_episodes:
+    
+#    while i < total_episodes:
+    while True:
         s = env.reset()
         running_reward = 0
         ep_history = []
