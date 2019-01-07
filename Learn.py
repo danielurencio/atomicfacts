@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from MarketEnv import MarketEnv
+from Agent import Agent
+
+df = pd.read_csv('fx_daily_EUR_USD.csv',parse_dates=['timestamp'],index_col='timestamp')
+df.sort_index(inplace=True)
+df['position'] = 0
+
+seq_size = 8
+
+env = MarketEnv(df,seq_size)
+
+sess = tf.Session()
+agent = Agent(sess,seq_size,5)
+sess.run(tf.global_variables_initializer())
+
+i = 0
+reward_history = []
+
+while True:
+    running_reward = 0
+    s = env.reset()
+
+    while True:
+        a = agent.act(s)
+        s_, r, done = env.step(a)
+        
+        td_error = agent.critic_learn(np.array([s]),r,np.array([s_]))
+        agent.actor_learn(np.array([s]),a,td_error)
+
+        s = s_
+        running_reward += r
+
+        if done:
+            reward_history.append(running_reward)
+            break
+
+
+    if i % 100 == 0 and i > 0:
+        reward_history = reward_history[-100:]
+        last_100_episodes_mean = np.mean(reward_history)
+        print(last_100_episodes_mean)
+
+    i += 1
