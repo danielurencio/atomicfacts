@@ -15,7 +15,7 @@ df = pd.read_csv('fx_daily_EUR_USD.csv',parse_dates=['timestamp'],index_col='tim
 df.sort_index(inplace=True)
 df['position'] = 0
 
-seq_size = 8
+seq_size = 22
 
 #env = gym.make('CartPole-v0')
 env = MarketEnv(df,seq_size)
