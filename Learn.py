@@ -60,7 +60,9 @@ while True:
         reward_history = reward_history[-100:]
         last_100_episodes_mean = np.mean(reward_history)
 
+
         if test_holdout:
+
             test_reward = 0
             s_test = env_test.reset()
             test_done = False
@@ -71,7 +73,8 @@ while True:
 
                 s_test = s_test_
                 test_reward += r_test
-        
+       
+
         if mongo_store:
             doc = { 'iteration':i, 'mean_reward':last_100_episodes_mean }
 
