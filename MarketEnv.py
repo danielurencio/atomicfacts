@@ -9,7 +9,7 @@ df['position'] = 0
 
 class MarketEnv(object):
     
-    def __init__(self, df, lag, standardize=True, hold=True, test_set=None):
+    def __init__(self, df, lag, standardize=True, hold=True, foreignScaler=None):
     # Configuration:
         if not len(df) or not lag:
             raise ValueError('No DataFrame or lag has been determined.')
@@ -19,7 +19,7 @@ class MarketEnv(object):
         self.lag = lag
         self.standardize = standardize
         self.hold = hold
-        self.laggedFeatures = self.generate_LaggedDataset()
+        self.laggedFeatures = self.generate_LaggedDataset(foreignScaler)
         self.step_ix = 0
         self.price = None
         self.last_step_ix = (len(self.df) - self.lag)
@@ -42,10 +42,16 @@ class MarketEnv(object):
         return arr
 
     
-    def generate_LaggedDataset(self):
+    def generate_LaggedDataset(self,foreignScaler=None):
         
         arr = self.data_AsMovingWindow()
-        self.scaler = StandardScaler()
+
+        # Foreign scalers are the way to test unobserved data, hence this new information has to be transformed
+        # with respect to the training data.
+        if not foreignScaler:
+            self.scaler = StandardScaler()
+        else:
+            self.scaler = foreignScaler
         
         def standardizeValues(col):
             '''fn: isolate each set of observations and arrange it as a moving window'''
@@ -59,9 +65,13 @@ class MarketEnv(object):
 
             if self.standardize and cond:
                 data = list(feature_vector)
-                self.scaler.fit(data)
+
+                if not foreignScaler:
+                    # If there's no foreign scaler fit the data.
+                    self.scaler.fit(data)
+                    # Otherwise, just transfrom since the scaler has already been fitted with another dataset.
+
                 result = self.scaler.transform(data, copy=True)
-                #result = self.scaler.fit_transform(list(feature_vector)).tolist()
                 
             else:
                 result = list(feature_vector)
